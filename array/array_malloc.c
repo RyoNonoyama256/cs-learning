@@ -35,6 +35,14 @@ static void list_grow(List *list) {
     list->data = tmp;
 }
 
+static void list_shrink(List *list) {
+    if(list->capacity > 4 && list->size <= list->capacity / 4) {
+        list->capacity /= 2;
+        int *tmp = realloc(list->data, sizeof(*(list->data)) * list->capacity);
+        if(tmp != NULL) list->data = tmp;
+    }
+}
+
 void list_append(List *list, int num) {
     if(list->size == list->capacity) {
         list_grow(list);
@@ -52,6 +60,14 @@ void list_insert(List *list, int index, int num) {
     }
     (list->data)[index] = num;
     ++(list->size);
+}
+
+void list_remove(List *list, int index) {
+    for(int i = index; i < list->size - 1; i++) {
+        (list->data)[i] = (list->data)[i + 1];
+    }
+    --(list->size);
+    list_shrink(list);
 }
 
 void list_print(List *list) {
@@ -73,6 +89,8 @@ int main(void) {
     list_append(&list, 6);
 
     list_insert(&list, 2, 99);
+
+    list_remove(&list, 5);
 
     list_print(&list);
 
