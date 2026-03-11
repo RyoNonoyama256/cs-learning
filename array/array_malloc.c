@@ -1,48 +1,56 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void list_append(int **arr, int *size, int *capacity, int num) {
-    if(*size >= *capacity) {
-        *capacity = *capacity * 2;
-        int *tmp = realloc(*arr, sizeof(**arr) * (*capacity));
-        if(tmp == NULL) {
-            fprintf(stderr, "realloc failed\n");
-            free(*arr);
-            exit(1);
-        }
-        
-        *arr = tmp;
+typedef struct {
+    int *data;
+    int size;
+    int capacity;
+} List;
+
+void list_init(List *list) {
+    list->capacity = 4;
+    list->size = 0;
+    list->data = malloc(sizeof(*(list->data)) * list->capacity);
+    if(list->data == NULL) {
+        fprintf(stderr, "malloc failed\n");
+        exit(1);
     }
-    (*arr)[*size] = num;
-    ++(*size);
 }
 
-void list_print(int *arr, int *size) {
-    for(int i = 0; i < *size; i++) {
-        printf("%d ", arr[i]);
+void list_append(List *list, int num) {
+    if(list->size == list->capacity) {
+        list->capacity = list-> capacity * 2;
+        int *tmp = realloc(list->data, sizeof(*(list->data)) * list->capacity);
+        if(tmp == NULL) {
+            fprintf(stderr, "realloc failed\n");
+            free(list->data);
+            exit(1);
+        }
+        list->data = tmp;
+    }
+    (list->data)[list->size] = num;
+    ++list->size;
+}
+
+void list_print(List *list) {
+    for(int i = 0; i < list->size; i++) {
+        printf("%d ", (list->data)[i]);
     }
     printf("\n");
 }
 
 int main(void) {
-    int capacity = 4;
-    int size = 0;
-    int *arr = malloc(sizeof(*arr) * capacity);
-    if(arr == NULL) {
-        fprintf(stderr, "malloc failed\n");
-        return 1;
-    }
+    List list;
+    list_init(&list);
 
+    list_append(&list, 1);
+    list_append(&list, 2);
+    list_append(&list, 3);
+    list_append(&list, 4);
+    list_append(&list, 5);
+    list_append(&list, 6);
+
+    list_print(&list);
     
-    list_append(&arr, &size, &capacity, 1);
-    list_append(&arr, &size, &capacity, 2);
-    list_append(&arr, &size, &capacity, 3);
-    list_append(&arr, &size, &capacity, 4);
-    list_append(&arr, &size, &capacity, 5);
-    list_append(&arr, &size, &capacity, 6);
-
-    list_print(arr, &size);
-
-    free(arr);
     return 0;
 }
