@@ -39,6 +39,24 @@ void list_append(List *list, int num) {
     ++list->size;
 }
 
+void list_insert(List *list, int index, int num) {
+    if(list->size == list->capacity) {
+        list->capacity = list->capacity * 2;
+        int *tmp = realloc(list->data, sizeof(*(list->data)) * list->capacity);
+        if(tmp == NULL) {
+            fprintf(stderr, "realloc failed\n");
+            list_free(list);
+            exit(1);
+        }
+        list->data = tmp;
+    }
+    for(int i = list->size - 1; i >= index; i--) {
+        (list->data)[i + 1] = (list->data)[i];
+    }
+    (list->data)[index] = num;
+    ++(list->size);
+}
+
 void list_print(List *list) {
     for(int i = 0; i < list->size; i++) {
         printf("%d ", (list->data)[i]);
@@ -56,6 +74,8 @@ int main(void) {
     list_append(&list, 4);
     list_append(&list, 5);
     list_append(&list, 6);
+
+    list_insert(&list, 2, 99);
 
     list_print(&list);
 
