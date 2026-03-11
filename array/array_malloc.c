@@ -24,31 +24,28 @@ void list_free(List *list) {
     list->capacity = 0;
 }
 
+static void list_grow(List *list) {
+    list->capacity = list->capacity * 2;
+    int *tmp = realloc(list->data, sizeof(*(list->data)) * list->capacity);
+    if(tmp == NULL) {
+        fprintf(stderr, "realloc failed\n");
+        list_free(list);
+        exit(1);
+    }
+    list->data = tmp;
+}
+
 void list_append(List *list, int num) {
     if(list->size == list->capacity) {
-        list->capacity = list-> capacity * 2;
-        int *tmp = realloc(list->data, sizeof(*(list->data)) * list->capacity);
-        if(tmp == NULL) {
-            fprintf(stderr, "realloc failed\n");
-            list_free(list);
-            exit(1);
-        }
-        list->data = tmp;
+        list_grow(list);
     }
     (list->data)[list->size] = num;
-    ++list->size;
+    ++(list->size);
 }
 
 void list_insert(List *list, int index, int num) {
     if(list->size == list->capacity) {
-        list->capacity = list->capacity * 2;
-        int *tmp = realloc(list->data, sizeof(*(list->data)) * list->capacity);
-        if(tmp == NULL) {
-            fprintf(stderr, "realloc failed\n");
-            list_free(list);
-            exit(1);
-        }
-        list->data = tmp;
+        list_grow(list);
     }
     for(int i = list->size - 1; i >= index; i--) {
         (list->data)[i + 1] = (list->data)[i];
