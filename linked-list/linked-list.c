@@ -52,6 +52,39 @@ void list_append(LinkedList *list, int num) {
     ++(list->size);
 }
 
+// index = 0 のとき head に挿入
+// index = 1 のとき head->nextに挿入
+void list_insert_at_index(LinkedList *list, int index, int num) {
+    if(index > list->size) {
+        fprintf(stderr, "index out of list size\n");
+        return;
+    }
+    
+    LinkedListNode *node = node_init(num);
+    if(index == 0) {
+        node->next = list->head;
+        list->head = node;
+    }
+    else {
+        LinkedListNode *prev = list->head;
+        for(int i = 0; i < index - 1; i++) {
+            prev = prev->next;
+        }
+        node->next = prev->next;
+        prev->next = node;
+    }
+    if(node->next  == NULL) list->tail = node;
+    ++(list->size);
+}
+
+void list_insert_at_node(LinkedList *list, LinkedListNode *prev, int num) {
+    LinkedListNode *node = node_init(num);
+    node->next = prev->next;
+    prev->next = node;
+    if(node->next == NULL) list->tail = node;
+    ++(list->size);
+}
+
 void list_print(LinkedList *list) {
     LinkedListNode *now = list->head;
     while(now) {
@@ -68,6 +101,8 @@ int main(void) {
     list_append(&list, 2);
     list_append(&list, 3);
     list_append(&list, 4);
+    list_insert_at_index(&list, 2, 99);
+    list_insert_at_node(&list, list.head->next, 88);
     list_print(&list);
     
     list_free(&list);
